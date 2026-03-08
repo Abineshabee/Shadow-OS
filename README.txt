@@ -1,31 +1,271 @@
->>> Required Tools
-$ sudo apt install build-essential nasm xorriso grub-pc-bin 
-$ sudo apt install nasm 
-$ sudo apt install qemu-kvm -y
-$ sudo apt install gcc-i686-linux-gnu binutils-i686-linux-gnu
-$ i686-linux-gnu-gcc --version
-$ i686-linux-gnu-ld --version
-$ sudo apt install grub-pc-bin xorriso
-$ sudo apt install mtools
 
->>> Create Work Place
-$ mkdir -p myos/{boot,iso}
-$ cd myos
+---
 
->>> Assemble Bootloader
-$ nasm -f elf32 boot.asm -o boot.o
+# Shadow OS
 
->>> Compile Kernel
-$ i686-linux-gnu-gcc -ffreestanding -m32 -c kernel.c -o kernel.o
+**Shadow OS** is a minimal experimental operating system written in **C programming language** and **x86 Assembly**.
+It demonstrates how a simple operating system boots, loads a kernel, and provides a basic command-line interface.
 
->>> Link Everything
-$ i686-linux-gnu-ld -T linker.ld -o kernel.bin kernel.o boot.o
+The project is designed for **learning operating system internals**, including bootloaders, kernel compilation, disk images, and virtualization.
 
->>> ISO file ( Bootable ISO )
-$ mkdir -p iso/boot/grub
-$ cp kernel.bin iso/boot/kernel.bin
-$ nano iso/boot/grub/grub.cfg
-'''
+The OS can run inside the **QEMU** emulator or **Oracle VM VirtualBox**.
+
+---
+
+# Project Overview
+
+Shadow OS implements the fundamental parts of an operating system:
+
+• Bootloader initialization
+• Kernel loading
+• Command-line interface
+• File operations simulation
+• Basic system commands
+
+The system boots from a **GRUB-based ISO image** and runs inside an emulator.
+
+---
+
+# Screenshot
+
+Example of Shadow OS running inside **QEMU**
+
+![Shadow OS Screenshot](/mnt/data/Screenshot%20from%202026-03-08%2013-35-05.png)
+
+The OS provides a terminal-like interface with commands such as:
+
+```
+clear
+pwd
+echo
+create
+write
+read
+remove
+list
+time
+date
+help
+exit
+```
+
+---
+
+# Features
+
+### Bootable Operating System
+
+The OS boots from a **bootable ISO image**.
+
+### Command Line Interface
+
+Users interact with the system through commands.
+
+### File System Simulation
+
+The OS simulates file creation, reading, writing, and deletion.
+
+### Kernel Execution
+
+The kernel handles command execution and system behavior.
+
+### Virtualization Support
+
+Shadow OS can run inside:
+
+• QEMU
+• VirtualBox
+
+---
+
+# Project Architecture
+
+The system architecture consists of the following layers:
+
+```
+Hardware / Emulator
+        ↓
+Bootloader (Assembly)
+        ↓
+Kernel (C)
+        ↓
+Command Interpreter
+        ↓
+User Commands
+```
+
+---
+
+# Directory Structure
+
+```
+ShadowOS
+│
+├── boot.asm        # Bootloader code (Assembly)
+├── kernel.c        # Kernel implementation
+├── linker.ld       # Kernel linker script
+├── boot.o          # Bootloader object file
+├── kernel.o        # Kernel object file
+├── kernel.bin      # Final kernel binary
+├── iso/            # Bootable ISO structure
+│   └── boot/
+│       └── grub/
+│           └── grub.cfg
+└── myos.iso        # Bootable ISO image
+```
+
+---
+
+# Command System
+
+Shadow OS provides several built-in commands.
+
+| Command | Description               |
+| ------- | ------------------------- |
+| clear   | Clears the screen         |
+| pwd     | Prints working directory  |
+| echo    | Displays a message        |
+| create  | Creates a new file        |
+| write   | Writes content to a file  |
+| read    | Reads content from a file |
+| remove  | Deletes a file            |
+| list    | Lists files               |
+| time    | Shows current time        |
+| date    | Shows system date         |
+| help    | Displays command list     |
+| exit    | Aborts the system         |
+
+---
+
+# Example Usage
+
+### Display help
+
+```
+$ help
+```
+
+Output:
+
+```
+Available commands:
+clear   - Clear the screen
+pwd     - Print working directory
+echo    - Display a message
+create  - Create a new file
+write   - Write content to a file
+read    - Read content from a file
+remove  - Delete a file
+list    - List all files
+time    - Get time
+date    - Get date
+help    - Show this help
+exit    - System Abort
+```
+
+---
+
+# Development Environment
+
+Shadow OS is developed on **Ubuntu** using common low-level programming tools.
+
+Required tools include:
+
+• NASM assembler
+• GCC cross compiler
+• GRUB bootloader tools
+• QEMU emulator
+
+---
+
+# Installing Required Tools
+
+Install the required packages:
+
+```bash
+sudo apt install build-essential nasm xorriso grub-pc-bin
+sudo apt install qemu-kvm -y
+sudo apt install gcc-i686-linux-gnu binutils-i686-linux-gnu
+sudo apt install grub-pc-bin xorriso
+sudo apt install mtools
+```
+
+Verify the cross compiler:
+
+```bash
+i686-linux-gnu-gcc --version
+i686-linux-gnu-ld --version
+```
+
+---
+
+# Create Workspace
+
+```
+mkdir -p myos/{boot,iso}
+cd myos
+```
+
+---
+
+# Assemble Bootloader
+
+Compile the assembly bootloader.
+
+```
+nasm -f elf32 boot.asm -o boot.o
+```
+
+---
+
+# Compile Kernel
+
+Compile the kernel using the cross compiler.
+
+```
+i686-linux-gnu-gcc -ffreestanding -m32 -c kernel.c -o kernel.o
+```
+
+Explanation:
+
+• `-ffreestanding` – compile without standard libraries
+• `-m32` – target 32-bit architecture
+
+---
+
+# Link the Kernel
+
+Link bootloader and kernel together.
+
+```
+i686-linux-gnu-ld -T linker.ld -o kernel.bin kernel.o boot.o
+```
+
+---
+
+# Create Bootable ISO
+
+Create the directory structure:
+
+```
+mkdir -p iso/boot/grub
+```
+
+Copy kernel:
+
+```
+cp kernel.bin iso/boot/kernel.bin
+```
+
+Create GRUB configuration:
+
+```
+nano iso/boot/grub/grub.cfg
+```
+
+Add:
+
+```
 set timeout=0
 set default=0
 
@@ -33,113 +273,119 @@ menuentry "MyOS" {
     multiboot /boot/kernel.bin
     boot
 }
-'''
+```
 
->>> Retry ISO Creation
-$ grub-mkrescue -o myos.iso iso
+Create ISO:
 
->>> Create the Disk Image
-$ qemu-img create -f raw persistent.img 50M
-
-
->>> Run in QEMU
-$  qemu-system-i386 -cdrom myos.iso -drive file=persistent.img,format=raw -m 512M
-
-
->>> Running Your ( myos.iso ) in VirtualBox 
-
-Now that you have `myos.iso`, follow these steps to boot it in **Oracle VirtualBox** on Ubuntu.  
-
-
-### **🔹 1️⃣ Open VirtualBox & Create a New VM**
-1. **Open VirtualBox** and click **"New"** to create a new virtual machine.
-2. **Set Name** → `MyOS` (or any name you like).
-3. **Choose Type** → `Other`.
-4. **Choose Version** → `Other/Unknown (64-bit or 32-bit, based on your OS)`.
-5. Click **Next**.
+```
+grub-mkrescue -o myos.iso iso
+```
 
 ---
 
-### **🔹 2️⃣ Configure Hardware**
-1. **Memory (RAM):** Set at least `128 MB` (or more if needed).
-2. **Hard Disk:** Select **Do not add a virtual hard disk**.
-3. Click **Create**.
+# Create Persistent Disk Image
+
+Create a virtual disk for storage.
+
+```
+qemu-img create -f raw persistent.img 50M
+```
 
 ---
 
-### **🔹 3️⃣ Attach the ISO File**
-1. Select your **MyOS VM** and click **Settings**.
-2. Go to **Storage**.
-3. Under **Controller: IDE**, click **Empty**.
-4. On the right, click the **CD icon** → **Choose a disk file...**.
-5. Select `myos.iso`.
-6. Click **OK**.
+# Run in QEMU
+
+Run the OS using **QEMU**.
+
+```
+qemu-system-i386 -cdrom myos.iso -drive file=persistent.img,format=raw -m 512M
+```
 
 ---
 
-### **🔹 4️⃣ Enable EFI (If Needed)**
-1. Go to **Settings** → **System**.
-2. **Enable EFI** if your OS requires it.
+# Running in VirtualBox
+
+You can also boot Shadow OS using **Oracle VM VirtualBox**.
+
+### Step 1 Create VM
+
+Name: MyOS
+Type: Other
+Version: Other/Unknown
+
+### Step 2 Configure Hardware
+
+Memory: 128MB minimum
+
+Hard Disk: Do not add disk
 
 ---
 
-### **🔹 5️⃣ Boot the OS**
-1. Select the **MyOS VM**.
-2. Click **Start**.
-3. If everything is correct, your OS should boot! 🎉  
+### Step 3 Attach ISO
+
+Settings → Storage → IDE Controller
+
+Attach:
+
+```
+myos.iso
+```
 
 ---
 
-### **Troubleshooting**
-- **Black screen?** Check if you selected the correct architecture (32-bit/64-bit).  
-- **Boot error?** Make sure `grub.cfg` is correctly set up.  
-- **ISO not found?** Ensure `myos.iso` is in the correct directory and properly mounted.  
+### Step 4 Boot
 
+Start the virtual machine.
 
-### **Controller Type in VirtualBox (for ISO Booting)**
-The **controller type** in VirtualBox determines how storage devices (like hard disks and CD/DVD drives) are connected.  
-
-For booting an **ISO file**, you typically use:  
-- **Controller Type: IDE (Recommended for ISOs)**
-- **Alternative: SATA (For newer OS support, but not needed for simple boot ISOs)**  
+If everything is correct, Shadow OS will boot.
 
 ---
 
-### **How to Set the Correct Controller Type**
-#### **1️⃣ Check Your Current Controller Type**
-1. Open **VirtualBox** and select your VM (`MyOS`).
-2. Click **Settings → Storage**.
-3. Look under **Controller** (e.g., **IDE Controller** or **SATA Controller**).
+# VirtualBox Storage Controllers
 
-#### **2️⃣ Change Controller Type (If Needed)**
-1. If you see a **SATA Controller** and need IDE:
-   - Click **Controller: SATA** → **Remove Controller** (if no disk is attached).
-   - Click **Add Controller** → **Choose IDE Controller**.
-   - Click **Add Optical Drive** → **Select your ISO** (`myos.iso`).
-2. If you are using **IDE Controller**:
-   - Under **Controller: IDE**, select the **CD/DVD drive**.
-   - Click the **CD icon** → **Choose a disk file...**.
-   - Select your ISO.
-
-#### **3️⃣ Save & Boot**
-- Click **OK** to save changes.
-- Start the VM.
+| Use Case               | Recommended Controller |
+| ---------------------- | ---------------------- |
+| Booting ISO            | IDE                    |
+| Modern OS installation | SATA                   |
+| High performance disks | NVMe                   |
 
 ---
 
-### **🔹 Best Controller Type for Different Use Cases**
-| **Use Case**                                | **Recommended Controller** |
-|---------------------------------------------|----------------------------|
-| Booting from ISO (Live OS)                  | **IDE** (Recommended)      |
-| Installing a modern OS (Linux, Windows 10+) | **SATA**                   |
-| High-speed disk performance                 | **NVMe or SCSI**           |
+# Educational Concepts
 
+This project demonstrates several operating system concepts:
 
+• Bootloaders
+• Kernel development
+• Cross compilation
+• Assembly programming
+• GRUB boot process
+• OS virtualization
 
+It is a great starting point for learning **operating system development**.
 
+---
 
+# Future Improvements
 
+Possible future improvements:
 
+• Real file system support
+• Keyboard drivers
+• Memory management
+• Process scheduling
+• Interrupt handling
+• Graphical interface
+• Multitasking
 
+---
 
+# Author
+
+Abinesh N
+
+GitHub
+[https://github.com/Abineshabee](https://github.com/Abineshabee)
+
+---
 
