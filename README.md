@@ -30,7 +30,7 @@ The system boots from a **GRUB-based ISO image** and runs inside an emulator.
 
 Example of Shadow OS running inside **QEMU**
 
-![Shadow OS Screenshot](/mnt/data/Screenshot%20from%202026-03-08%2013-35-05.png)
+![Shadow OS Screenshot](./os.png)
 
 The OS provides a terminal-like interface with commands such as:
 
