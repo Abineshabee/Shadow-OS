@@ -5,11 +5,9 @@
 
 **Shadow OS** is a minimal experimental operating system written in **C programming language** and **x86 Assembly**.
 It demonstrates how a simple operating system boots, loads a kernel, and provides a basic command-line interface.
-
 <p align="center">
   <img src="Shadow-os-logo.svg" width="400">
 </p>
-
 The project is designed for **learning operating system internals**, including bootloaders, kernel compilation, disk images, and virtualization.
 
 The OS can run inside the **QEMU** emulator or **Oracle VM VirtualBox**.
