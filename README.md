@@ -7,7 +7,7 @@
 It demonstrates how a simple operating system boots, loads a kernel, and provides a basic command-line interface.
 
 <p align="center">
-  <img src="shadow-os-logo.svg" width="250">
+  <img src="Shadow-os-logo.svg" width="250">
 </p>
 
 The project is designed for **learning operating system internals**, including bootloaders, kernel compilation, disk images, and virtualization.
