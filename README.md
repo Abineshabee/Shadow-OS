@@ -1,6 +1,3 @@
-
----
-
 # Shadow OS
 
 **Shadow OS** is a minimal experimental operating system written in **C programming language** and **x86 Assembly**.
