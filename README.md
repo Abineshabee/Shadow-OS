@@ -1,4 +1,4 @@
-# Shadow OS
+# Shadow OS [![DOI](https://zenodo.org/badge/943245568.svg)](https://doi.org/10.5281/zenodo.20474617)
 
 **Shadow OS** is a minimal experimental operating system written in **C programming language** and **x86 Assembly**.
 It demonstrates how a simple operating system boots, loads a kernel, and provides a basic command-line interface.
